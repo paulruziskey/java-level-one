@@ -38,7 +38,7 @@ Java requires semicolons at the end of all statements. This tells the compiler w
 ```java
 // Single-line comment.
 /*
-Multi-line
+Multiline
 comment.
 */
 ```
