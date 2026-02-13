@@ -303,9 +303,9 @@ Switch-statements can be used with values of any type. The following code demons
 ```java
 final String word = IO.readln("Enter a word: ");
 switch (word.toLowerCase()) {
-    case "hello" -> IO.println("Hey, there!");
+    case "hello"   -> IO.println("Hey, there!");
     case "goodbye" -> IO.println("You're already leaving?");
-    default -> IO.println("That's a nice word!");
+    default        -> IO.println("That's a nice word!");
 }
 ```
 
