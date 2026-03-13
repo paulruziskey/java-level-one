@@ -5,7 +5,7 @@
 ### Basic String Literals
 
 Enclosing text in double quotes creates a *string literal*. String literals can then be assigned to variables to 
-create `string` objects. The following code demonstrates creating a string from a string literal.
+create `String` objects. The following code demonstrates creating a string from a string literal.
 
 ```java
 final var sentence = "Hello, world!";
@@ -53,10 +53,10 @@ Here is a "backslash": \
 
 Sometimes we want to write strings which would end up spanning multiple lines in the console. This means we would 
 need to include a lot of newline characters, which would make it a bit hard to read the string. This is where *text 
-blocks* come in! These string literals will ignore all escape sequences, meaning backslashes will work just 
-fine without escaping. Text blocks also let us span multiple lines, and any formatting in a text block becomes part of 
-the final string! This means if we indent in the text block, the indentation will be in the actual string! The 
-following code demonstrates creating a string from a text block.
+blocks* come in! These string literals will ignore all escape sequences, meaning backslashes will work just fine 
+without escaping. Text blocks also let us span multiple lines, and any formatting in a text block becomes part of the 
+final string! This means if we indent in a text block, the indentation will be in the actual string! The following code 
+demonstrates creating a string from a text block.
 
 ```java
 final var dialog = """
@@ -82,7 +82,41 @@ power of text blocks! Definitely make use of them when you need a string that sp
 When declaring a text block, the opening triple double quotes must be on their own line. The closing triple double 
 should go at the end of the last line unless you want newlines at the end of the text block.
 
-## String Properties and Methods
+## String Methods
+
+### Parsing Helpers
+
+It's often desirable to get rid of stray whitespace around a string when we need to parse it. Java strings have a 
+`strip` method which strips leading and trailing whitespace characters.
+
+```java
+final String input = IO.readln("Enter a word: ").strip();
+IO.println("Your input was \"%s\"".formatted(input));
+```
+
+The above code outputs the following to the console.
+
+```text
+Enter something:         okay      
+You entered: "okay"
+```
+
+It's also possible to convert a string to all uppercase or all lowercase. These methods can be helpful when it's not 
+possible to perform case-insensitive comparisons in the traditional way.
+
+```java
+final String word = IO.readln("Enter a word: ");
+IO.println(word.toLowerCase());
+IO.println(word.toUpperCase());
+```
+
+The above code outputs the following to the console.
+
+```text
+Enter a word: Hello
+hello
+HELLO
+```
 
 ### Concatenation
 
@@ -103,13 +137,13 @@ Enter another word: world
 helloworld
 ```
 
-Concatenation is useful when we want to simply combine two or more strings. If we want to build a string from many
+Concatenation is useful when we want to simply combine two or more strings. If we want to build a string from many 
 different values, or if we want to combine a string literal and a value for outputting, it's better to use a formatted 
 string.
 
-### `length` Method and Indexing
+### `length` and `charAt` Methods
 
-If we want to get the length of a string (i.e., the number of Unicode characters), we can use the `length` method. 
+If we want to get the length of a string (i.e., the number of Unicode characters), we can use the `length` method.
 
 If we want to get a character at a particular index value, we can use the `charAt` method.
 
@@ -121,7 +155,7 @@ IO.println("%s has %d character(s) in it!".formatted(word, word.length()));
 IO.println("%s starts with the letter %c".formatted(word, word.charAt(0)));
 ```
 
-What if we wanted to get the last letter in `word`? We could combine the `length` method with the `charAt` method!
+What if we wanted to get the last letter in word? We could combine the `length` method with the `charAt` method!
 
 ```java
 IO.println("%s ends with the letter %c".formatted(word, word.charAt(word.length() - 1)));
@@ -155,6 +189,8 @@ llo
 
 ### Inclusion
 
+#### `contains` Method
+
 If we want to check if a string contains a particular character or substring, we can use the `contains` method. This 
 method checks if a string contains a particular character sequence. This check is always case-sensitive, meaning asking 
 if a string contains "A" versus "a" are different questions.
@@ -171,6 +207,8 @@ The above code outputs the following to the console.
 false
 true
 ```
+
+#### `indexOf` and `lastIndexOf` Methods
 
 If we want to get the index value of the first occurrence of a particular character or substring, we can use the 
 `indexOf` method. We could also get the index value of the last occurrence of a particular character or substring using 
@@ -195,6 +233,47 @@ First occurrence of "app": 0
 
 When checking for the index of a substring, the returned value will be the index value of the first character in the 
 substring. If there are no occurrences of a character or substring, -1 is returned.
+
+Sometimes we want to find additional occurrences of characters or substrings after the first occurrence. We can do this 
+by providing the `indexOf` method with a starting index value so it will only find occurrences from that index value to 
+the end of the string. This also works for the `lastIndexOf` method. The following code demonstrates this.
+
+```java
+final var word = "apple";
+int indexOfFirstP = word.indexOf('p');
+int indexOfSecondP = word.indexOf('p', indexOfFirstP + 1);
+int indexOfFirstL = word.lastIndexOf('l');
+int indexOfSecondL = word.lastIndexOf('l', indexOfFirstL - 1);
+IO.println("Index values of 'p': %d, %d".formatted(indexOfFirstP, indexOfSecondP));
+IO.println("Index values of 'l': %d, %d".formatted(indexOfFirstL, indexOfSecondL));
+```
+
+The above code outputs the following to the console.
+
+```text
+Index values of 'p': 1, 2
+Index values of 'l': 3, -1
+```
+
+Additionally, we can provide an ending index value for where the search should stop. While the starting index value is 
+inclusive, the ending index value is *exclusive*. The `lastIndexOf` method doesn't support this extra argument.
+
+```java
+final var phrase = "appleapple";
+IO.println("Index of \"ea\": %d".formatted(phrase.indexOf("ea", 0, 5)));
+IO.println("Index of \"ea\": %d".formatted(phrase.indexOf("ea", 0, 6)));
+```
+
+The above code outputs the following to the console.
+
+```text
+Index of "ea": -1
+Index of "ea": 4
+```
+
+The first call to `indexOf` returns -1 since there is no "ea" between index 0 and index 4. When the search area is 
+increased by one character, (i.e., the search area is now index 0 to index 5), the `indexOf` method returns 4 since 
+this is the index value of the start of the substring "ea".
 
 ### Equality
 
@@ -250,40 +329,6 @@ The first -1 is because "apple" comes before "banana" in the alphabet, and there
 because the comparison was case-sensitive and 'A' comes before 'a' in the Unicode specification. Specifically, 'A' is 
 32 letters before 'a'. The second -1 is because changing the case sensitivity doesn't change the result since the 
 strings were lowercase already. The 0 is because the comparison was made case insensitive.
-
-### Parsing Helpers
-
-It's often desirable to get rid of stray whitespace around a string when we need to parse it. Java strings have a 
-`strip` method which strips leading and trailing whitespace characters.
-
-```java
-final String input = IO.readln("Enter a word: ").strip();
-IO.println("Your input was \"%s\"".formatted(input));
-```
-
-The above code outputs the following to the console.
-
-```text
-Enter a word:         okay     
-Your input was "okay"
-```
-
-It's also possible to convert a string to all uppercase or all lowercase. These methods can be helpful in cases where 
-it's not possible to use the regular case-insensitive comparison methods.
-
-```java
-final String word = IO.readln("Enter a word: ");
-IO.println(word.toLowerCase());
-IO.println(word.toUpperCase());
-```
-
-The above code outputs the following to the console.
-
-```text
-Enter a word: Hello
-hello
-HELLO
-```
 
 ## String Immutability
 
